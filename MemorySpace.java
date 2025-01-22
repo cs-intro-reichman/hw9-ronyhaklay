@@ -1,10 +1,12 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 /**
  * Represents a managed memory space. The memory space manages a list of allocated 
  * memory blocks, and a list free memory blocks. The methods "malloc" and "free" are 
  * used, respectively, for creating new blocks and recycling existing blocks.
- */
+ */ 
 public class MemorySpace {
-	
 	// A list of the memory blocks that are presently allocated
 	private LinkedList allocatedList;
 
@@ -58,8 +60,26 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		//// Replace the following statement with your code
-		return -1;
+		MemoryBlock freeSpace = null;
+		for (MemoryBlock block : this.freeList) {
+			if (block.length >= length) {
+				freeSpace = block;
+				break;
+			}
+		}
+		if (freeSpace == null)
+			return -1;
+
+		MemoryBlock newBlock = new MemoryBlock(freeSpace.baseAddress, length);
+		this.allocatedList.addLast(newBlock);
+
+		if (freeSpace.length == length) {
+			this.freeList.remove(freeSpace);
+			return newBlock.baseAddress;
+		}
+		freeSpace.length -= length;
+		freeSpace.baseAddress += length;
+		return newBlock.baseAddress;
 	}
 
 	/**
@@ -71,7 +91,19 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
-		//// Write your code here
+		if (this.allocatedList.getSize() == 0)
+			throw new IllegalArgumentException("index must be between 0 and size");
+		MemoryBlock blockToFree = null;
+		for (MemoryBlock block : this.allocatedList) {
+			if (block.baseAddress == address) {
+				blockToFree = block;
+				break;
+			}
+		}
+		if (blockToFree != null) {
+			this.allocatedList.remove(blockToFree);
+			this.freeList.addLast(blockToFree);
+		}
 	}
 	
 	/**
@@ -88,7 +120,18 @@ public class MemorySpace {
 	 * In this implementation Malloc does not call defrag.
 	 */
 	public void defrag() {
-		/// TODO: Implement defrag test
-		//// Write your code here
+		this.freeList.sort();
+		MemoryBlock previous = null;
+		for (MemoryBlock block : this.freeList) {
+			if (previous == null) {
+				previous = block;
+				continue;
+			}
+			if (previous.baseAddress + previous.length == block.baseAddress) {
+				previous.length += block.length;
+				this.freeList.remove(block);
+			} else 
+				previous = block;
+		}
 	}
 }
