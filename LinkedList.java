@@ -54,10 +54,12 @@ public class LinkedList {
 			throw new IllegalArgumentException("index must be between 0 and size");
 		Node temp = first;
 		for(int i = 0; i < index ; i++)
+			if (i == index) 
+				return temp;
 			temp = temp.next;
-		return temp;
+		return null;
 	}
-	
+
 	/**
 	 * Creates a new Node object that points to the given memory block, 
 	 * and inserts the node at the given index in this list.
@@ -80,25 +82,19 @@ public class LinkedList {
 	public void add(int index, MemoryBlock block) {
 		if(index < 0 || index > size)
 			throw new IllegalArgumentException("index must be between 0 and size");
-		if(index == size || size == 0)
+		Node AnotherNode = new Node(block);
+		if (index == 0) 
+			addFirst(block);
+		else if (index == size) 
+				addLast(block);
+		else
 		{
-			this.addLast(block);
-			return;
+				Node prev = getNode(index - 1);
+				AnotherNode.next = prev.next;
+				prev.next = AnotherNode; 
+				size ++;
 		}
-		if(index == 0)
-		{
-			this.addFirst(block);
-			return;
-		}
-		Node add = new Node(block);
-		Node temp = this.first;
-		for(int i = 0; i < index-1 ; i++)
-			temp = temp.next;
-		add.next = temp.next;
-		temp.next = add;
-		size++;
 	}
-
 	/**
 	 * Creates a new node that points to the given memory block, and adds it
 	 * to the end of this list (the node will become the list's last element).
@@ -129,12 +125,16 @@ public class LinkedList {
 	 *        the given memory block
 	 */
 	public void addFirst(MemoryBlock block) {
-		Node add = new Node(block);
-		add.next = first;
-		first = add;
-		size++;
-		if (last == null)
-			last = first;
+		Node AnotherNode = new Node(block);
+		if (size == 0) {
+			first = AnotherNode;
+			last = AnotherNode;
+		} 	
+		else {
+			AnotherNode.next = first;
+			first = AnotherNode;
+		}
+		size ++;
 	}
 
 	/**
@@ -241,12 +241,12 @@ public class LinkedList {
 	 * A textual representation of this list, for debugging.
 	 */
 	public String toString() {
-		String returnUser = "";
-		Node temp = this.first;
-		while (temp != null) {
-			returnUser += temp.block.toString() + " ";
-			temp = temp.next;
-		}
-		return returnUser;
+			StringBuilder result = new StringBuilder();
+			Node temp = first;
+			while (temp != null) {
+				result.append(temp.block.toString()).append(" ");
+				temp = temp.next;
+			}
+		return result.toString();
 	}
 }
