@@ -177,26 +177,22 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		if (node == null) 
-            throw new NullPointerException("NullPointerException!");
-		if (size == 0)
-			return;
-		if (node == this.first) {
+		Node temp = first;
+		if(this.first == node) {
 			this.first = this.first.next;
-			if (this.first == null) 
+			if(this.first == null) 
 				this.last = null;
 		}
-		else {
-			ListIterator list = iterator();
-			while (list.hasNext() && list.current.next != node) 
-				list.next();
-			if (!list.hasNext())
-				return;
-			list.current.next = node.next;
-			if (node == this.last) 
-				this.last = list.current;
-		}
-		this.size --;
+		else 
+			while (temp.next != node && temp != null) 
+				temp = temp.next;
+			if (temp != null) {
+				temp.next = node.next;
+				if (temp.next == null) {
+					this.last = temp;
+				}
+			}
+		this.size--; 
 	}
 	/**
 	 * Removes from this list the node which is located at the given index.
@@ -206,18 +202,9 @@ public class LinkedList {
 	 *         if index is negative or greater than or equal to size
 	 */
 	public void remove(int index) {
-		if(index < 0 || index > this.size)
+		if (index < 0 || index > size)
 			throw new IllegalArgumentException("index must be between 0 and size");
-		if(this.size == 0)
-			return;
-		if(this.size == 1) 
-		{
-			this.first = null;
-			this.last = null;
-			this.size = 0;
-			return;
-		}
-		remove(getBlock(index));
+		remove(getNode(index));
 	}
 	/**
 	 * Removes from this list the node pointing to the given memory block.
