@@ -177,13 +177,26 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		int index = 0;
-		for (int i = 0; i < size; i++) {
-			if (node == getNode(i)) {
-				index = i;
-			}
+		if (node == null) 
+            throw new NullPointerException("NullPointerException!");
+		if (size == 0)
+			return;
+		if (node == this.first) {
+			this.first = this.first.next;
+			if (this.first == null) 
+				this.last = null;
 		}
-		remove(index);
+		else {
+			ListIterator list = iterator();
+			while (list.hasNext() && list.current.next != node) 
+				list.next();
+			if (!list.hasNext())
+				return;
+			list.current.next = node.next;
+			if (node == this.last) 
+				this.last = list.current;
+		}
+		this.size --;
 	}
 	/**
 	 * Removes from this list the node which is located at the given index.
@@ -193,20 +206,18 @@ public class LinkedList {
 	 *         if index is negative or greater than or equal to size
 	 */
 	public void remove(int index) {
-		if (index < 0 || index >= size)
-			throw new IllegalArgumentException(" NullPointerException!");
-		if (index == 0) {
-			if (this.size == 1) {
-				this.first = null;
-				this.last = null;
-			} 
-			else this.first = getNode(index + 1);
+		if(index < 0 || index > this.size)
+			throw new IllegalArgumentException("index must be between 0 and size");
+		if(this.size == 0)
+			return;
+		if(this.size == 1) 
+		{
+			this.first = null;
+			this.last = null;
+			this.size = 0;
+			return;
 		}
-		else if (index == this.size - 1) {
-			getNode(index - 1).next = null;
-			this.last = getNode(index - 1);
-		} else getNode(index - 1).next = getNode(index + 1);
-		this.size--;
+		remove(getBlock(index));
 	}
 	/**
 	 * Removes from this list the node pointing to the given memory block.
@@ -232,7 +243,7 @@ public class LinkedList {
 	 */
 	public String toString() {
 			StringBuilder result = new StringBuilder();
-			Node temp = first;
+			Node temp = this.first;
 			while (temp != null) {
 				result.append(temp.block.toString()).append(" ");
 				temp = temp.next;
