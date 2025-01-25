@@ -52,14 +52,12 @@ public class LinkedList {
 	public Node getNode(int index) {
 		if (index < 0 || index > size) 
 			throw new IllegalArgumentException("index must be between 0 and size");
-		Node temp = first;
+		Node temp = this.first;
 		for(int i = 0; i < index ; i++)
-			if (i == index) 
-				return temp;
-			temp = temp.next;
-		return null;
+			if (temp != null) 
+			    temp = temp.next;
+		return temp;
 	}
-
 	/**
 	 * Creates a new Node object that points to the given memory block, 
 	 * and inserts the node at the given index in this list.
@@ -86,13 +84,13 @@ public class LinkedList {
 		if (index == 0) 
 			addFirst(block);
 		else if (index == size) 
-				addLast(block);
+			addLast(block);
 		else
 		{
-				Node prev = getNode(index - 1);
-				AnotherNode.next = prev.next;
-				prev.next = AnotherNode; 
-				size ++;
+			Node prev = getNode(index - 1);
+			AnotherNode.next = prev.next;
+			prev.next = AnotherNode; 
+			this.size ++;
 		}
 	}
 	/**
@@ -163,17 +161,15 @@ public class LinkedList {
 	 * @return the index of the block, or -1 if the block is not in this list
 	 */
 	public int indexOf(MemoryBlock block) {
-		Node temp = this.first;
-		int indexOf = 0;
-		while (temp != null) {
-			if (temp.block.equals(block)) 
-				return indexOf;
-			temp = temp.next;
-			indexOf++;
+		int index = -1;
+		for (int i = 0; i < this.size; i++) {
+			if (block == getBlock(i)) {
+				index = i;
+				break;
+			}
 		}
-		return -1;
+		return index;
 	}
-
 	/**
 	 * Removes the given node from this list.	
 	 * 
@@ -181,13 +177,14 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		int indexOf = this.indexOf(node.block);
-		if (indexOf == -1) {
-			return;
+		int index = 0;
+		for (int i = 0; i < size; i++) {
+			if (node == getNode(i)) {
+				index = i;
+			}
 		}
-		this.remove(indexOf);
+		remove(index);
 	}
-
 	/**
 	 * Removes from this list the node which is located at the given index.
 	 * 
@@ -196,28 +193,21 @@ public class LinkedList {
 	 *         if index is negative or greater than or equal to size
 	 */
 	public void remove(int index) {
-		if (index >= this.size || 0 > index) {
-			throw new IllegalArgumentException("index must be between 0 and size");
-		}
+		if (index < 0 || index >= size)
+			throw new IllegalArgumentException(" NullPointerException!");
 		if (index == 0) {
-			this.first = this.first.next;
 			if (this.size == 1) {
+				this.first = null;
 				this.last = null;
-			}
-			this.size--;
-			return;
+			} 
+			else this.first = getNode(index + 1);
 		}
-		Node temp = this.first;
-		for (int i = 0; i < index - 1; i++) {
-			temp = temp.next;
-		}
-		temp.next = temp.next.next; 
+		else if (index == this.size - 1) {
+			getNode(index - 1).next = null;
+			this.last = getNode(index - 1);
+		} else getNode(index - 1).next = getNode(index + 1);
 		this.size--;
-		if (index == this.size)
-			this.last = temp;
-		return;
 	}
-
 	/**
 	 * Removes from this list the node pointing to the given memory block.
 	 * 
